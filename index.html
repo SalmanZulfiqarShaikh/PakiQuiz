@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Flag_of_Pakistan.svg/2560px-Flag_of_Pakistan.svg.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <title>PakiQuiz</title>
+</head>
+<body>
+  <div class="container">
+    <div class="head">
+      <h2>PakiQuiz</h2>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Flag_of_Pakistan.svg/2560px-Flag_of_Pakistan.svg.png" alt="Flag of Pakistan" />
+    </div>
+
+    <div id="quiz-container">
+      <div id="question-container" class="hidden">
+        <h2 id="question-text"></h2>
+        <ul id="choices-list">
+          <!-- Options will be injected by JS -->
+        </ul>
+        <button id="next-btn" class="hidden">Next Question</button>
+      </div>
+
+      <div id="result-container" class="hidden">
+        
+      </div>
+
+      <button id="start-btn">Start Quiz</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
