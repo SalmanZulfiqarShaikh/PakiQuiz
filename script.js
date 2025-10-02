@@ -253,139 +253,144 @@ document.addEventListener("DOMContentLoaded", ()=>{  // to load content effortle
     answer: "Multan"
   }
 ];
-let currentQuestionIndex = 0;
-let score = 0;
-let shuffledQuestions = [];
 
-
-function getRandomQuestions(num) {
+                            let currentQuestionIndex = 0;
+  let score = 0;
   let shuffledQuestions = [];
-     const usedIndexes = new Set();
 
-    while (shuffledQuestions.length < num) {
-      const randomIndex = Math.floor(Math.random()*pakistanGKQuestions.length);
+  // Random set of questions
+  function getRandomQuestions(num) {
+    let selected = [];
+    const usedIndexes = new Set();
 
+    while (selected.length < num) {
+      const randomIndex = Math.floor(Math.random() * pakistanGKQuestions.length);
       if (!usedIndexes.has(randomIndex)) {
-        shuffledQuestions.push(pakistanGKQuestions[randomIndex]);
+        selected.push(pakistanGKQuestions[randomIndex]);
         usedIndexes.add(randomIndex);
       }
     }
-    return shuffledQuestions;
+    return selected;
+  }
 
-}
-
-startButton.addEventListener("click",()=>{
-   startButton.classList.add("hidden");
-   resultMessage.classList.add("hidden");
+  // Start quiz
+  startButton.addEventListener("click", () => {
+    startButton.classList.add("hidden");
+    resultMessage.classList.add("hidden");
     questionContainer.classList.remove("hidden");
-    shuffledQuestions = getRandomQuestions(5);
+
+    shuffledQuestions = getRandomQuestions(5); // 5 random questions
     currentQuestionIndex = 0;
     score = 0;
+
     showQuestion();
-  }
-)
+  });
 
+  // Show current question
+  function showQuestion() {
+    choiceList.innerHTML = "";
+    nextButton.classList.add("hidden");
 
-function showQuestion() {
-  choiceList.innerHTML = "";
-  nextButton.classList.add("hidden");
-  const currentQuestion = shuffledQuestions[currentQuestionIndex];
-  questionText.textContent = `Q${currentQuestionIndex+1})  ${currentQuestion.question}`;
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+    questionText.textContent = `Q${currentQuestionIndex + 1}) ${currentQuestion.question}`;
 
-      currentQuestion.options.forEach(option => {
+    // 👇 shuffle options randomly
+    const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+    shuffledOptions.forEach(option => {
       const li = document.createElement("li");
       li.textContent = option;
       li.classList.add("option");
-      choiceList.appendChild(li)
+      choiceList.appendChild(li);
 
+      li.addEventListener("click", () => handleAnswer(option, currentQuestion.answer));
+    });
+  }
 
-      li.addEventListener("click",()=> handleAnser(option, currentQuestion.answer));
-      });
+  // Handle answer
+  function handleAnswer(selected, correct) {
+    const options = document.querySelectorAll(".option");
+    options.forEach(opt => opt.style.pointerEvents = "none"); // disable clicks
 
-};
-
-function handleAnser(selected,correct) {
-     const options = document.querySelectorAll(".option");
-       options.forEach(opt => opt.style.pointerEvents = "none"); // to prevent double click
-     options.forEach(opt => {
-        if (opt.textContent === correct) {
-           opt.classList.add("correct")
-        } else if (opt.textContent === selected) {
+    options.forEach(opt => {
+      if (opt.textContent === correct) {
+        opt.classList.add("correct");
+      } else if (opt.textContent === selected) {
         opt.classList.add("incorrect");
       }
     });
 
     if (selected === correct) {
       correctSound.currentTime = 0;
-      correctSound.play()
+      correctSound.play();
       score++;
     } else {
       wrongSound.currentTime = 0;
       wrongSound.play();
     }
+
     nextButton.classList.remove("hidden");
-
-}
-
-nextButton.addEventListener("click", ()=>{
-
-  currentQuestionIndex++;
-  if (currentQuestionIndex < shuffledQuestions.length) {
-     showQuestion();
-  } else {
-    showResult();
   }
-})
 
-function getEmoji(score) {
-    switch(score) {
-        case 0:
-            return "😭";
-        case 1:
-            return "😢"; 
-        case 2:
-            return "😐";
-        case 3:
-            return "🙂"; 
-        case 4:
-            return "😃"; 
-        case 5:
-            return "🤩"; 
-        default:
-            return "";
+  // Next button
+  nextButton.addEventListener("click", () => {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < shuffledQuestions.length) {
+      showQuestion();
+    } else {
+      showResult();
     }
-}
+  });
 
-function getMsg(score) {
-  if (score <= 2) {
-    return "Try Improving Your Knowledge About Pakistan";
-  } else if (score <= 4) {
-    return "Wow You're Quite Knowledgeable About Pakistan";
-  } else if (score === 5) {
-    return "Seems like You know Everything About Pakistan";
-  } else {
-    return "";
+  // Emojis for results
+  function getEmoji(score) {
+    switch (score) {
+      case 0: return "😭";
+      case 1: return "😢";
+      case 2: return "😐";
+      case 3: return "🙂";
+      case 4: return "😃";
+      case 5: return "🤩";
+      default: return "";
+    }
   }
-}
 
+  // Messages for results
+  function getMsg(score) {
+    if (score <= 2) {
+      return "Try Improving Your Knowledge About Pakistan";
+    } else if (score <= 4) {
+      return "Wow You're Quite Knowledgeable About Pakistan";
+    } else if (score === 5) {
+      return "Seems like You know Everything About Pakistan";
+    } else {
+      return "";
+    }
+  }
 
-function showResult() {
-  questionContainer.classList.add("hidden");
-  resultMessage.classList.remove("hidden");
-  const msg = getMsg(score);
-  const emoji = getEmoji(score);
-    resultMessage.innerHTML = `<h2>Your Score:</h2>
-        <p id="score">${score}/${shuffledQuestions.length} ${emoji}</p>
-        <button id="restart-btn">Restart Quiz</button>
-        <br>
-        <br>
-        <p>${msg}</p>`;
+  // Show final result
+  function showResult() {
+    questionContainer.classList.add("hidden");
+    resultMessage.classList.remove("hidden");
 
-        const restartBtn = document.getElementById("restart-btn");
-        restartBtn.addEventListener("click",restart)
-}
+    const msg = getMsg(score);
+    const emoji = getEmoji(score);
 
-function restart() {
-  location.reload();
-}
+    resultMessage.innerHTML = `
+      <h2>Your Score:</h2>
+      <p id="score">${score}/${shuffledQuestions.length} ${emoji}</p>
+      <button id="restart-btn">Restart Quiz</button>
+      <br><br>
+      <p>${msg}</p>
+    `;
+
+    const restartBtn = document.getElementById("restart-btn");
+    restartBtn.addEventListener("click", restart);
+  }
+
+  // Restart quiz
+  function restart() {
+    location.reload();
+  }
+
 });
